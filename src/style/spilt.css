@@ -1,0 +1,39 @@
+.searchBtn, .file, .fold ,.backBtn{
+  cursor: pointer;
+}
+
+.searchInput {
+  width: 80%;
+}
+
+::-webkit-scrollbar {
+  /*滚动条整体样式*/
+  width: 10px; /*高宽分别对应横竖滚动条的尺寸*/
+  height: 10px;
+  scrollbar-arrow-color: red;
+}
+
+::-webkit-scrollbar-thumb {
+  /*滚动条里面小方块*/
+  border-radius: 5px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.2);
+  scrollbar-arrow-color: red;
+}
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.demo-split {
+  height: 1000px;
+  border: 2px solid #000000;
+}
+.demo-split-pane{
+  height: 100%;
+  overflow:auto;
+}
+.demo-split-pane {
+  padding: 10px;
+}
