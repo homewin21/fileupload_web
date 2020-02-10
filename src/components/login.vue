@@ -17,6 +17,9 @@
           <FormItem>
             <Button type="primary" @click="handleSubmit('formInline')">Signin</Button>
           </FormItem>
+          <FormItem>
+            <span>使用第三方账号登录</span><a ><img src="../../static/img/QQ.jpeg" class="otherLogin"></a>
+          </FormItem>
         </Form>
       </TabPane>
       <TabPane label="注册" name="name2">
@@ -81,16 +84,15 @@
 </script>
 <style>
   .loginArea {
-    text-align: center;
     width: 450px;
-    height: 300px;
+    height: 350px;
     border: solid 1px gray;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     border-radius:20px;
-    /*background-color: #f5f7f9;*/
+    background-color: #f5f7f9;
   }
   .ivu-tabs-nav {
     left: 50%;
@@ -99,5 +101,9 @@
   }
   .ivu-tabs-ink-bar{
     width: 50%;
+  }
+  .otherLogin{
+    width: 30px;
+    height: 30px;
   }
 </style>
