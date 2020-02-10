@@ -4,7 +4,7 @@
     </div>
 </template>
 <script>
-import mybtn from "../components/Button"
+import mybtn from "../components/login"
 export default {
     name:"mybtn1",
     components: {

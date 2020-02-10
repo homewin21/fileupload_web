@@ -63,14 +63,14 @@
     import {Message} from 'iview';
     import "../style/spilt.css";
     //用于记录当前文件路径，防止输入框路径更变的情况
-    let pathName = "/home";
+    let pathName = "D:\\";
     export default {
         data() {
             return {
                 split1: 0.5,
                 foldList: [],
                 fileList: [],
-                path: "/home",
+                path: "D:\\",
                 modal1: false,
                 foldName: '',
                 fileName: '',
