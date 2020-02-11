@@ -6,7 +6,10 @@ import router from './router'
 import axios from 'axios';
 import Video from 'video.js'
 import 'video.js/dist/video-js.css'
+import 'view-design/dist/styles/iview.css';
+import ViewUI from 'view-design';
 
+Vue.use(ViewUI);
 Vue.prototype.$video = Video
 Vue.prototype.$axios = axios;
 
