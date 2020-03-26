@@ -45,7 +45,7 @@
         <Upload
           multiple
           type="drag"
-          action="http://localhost:8081/file/uploadFile"
+          action="http://localhost:4000/fileupload/file/uploadFile"
           :on-success="uploadSuccess"
           :on-error="uploadError"
           :data=dataObject
@@ -85,7 +85,7 @@
             searchClick() {
                 this.dataObject.path = pathName = this.path;
                 this.$axios
-                    .get("http://localhost:8081/file/getPath", {
+                    .get("http://localhost:4000/fileupload/file/getPath", {
                         params: {path: pathName}
                     })
                     .then(resp => {
@@ -106,7 +106,7 @@
                     });
             }, foldClick(e) {
                 this.$axios
-                    .get("http://localhost:8081/file/getPath", {
+                    .get("http://localhost:4000/fileupload/file/getPath", {
                         params: {path: pathName + "\\" + e.target.innerText}
                     })
                     .then(resp => {
@@ -129,16 +129,16 @@
             }, fileClick(e) {
                 this.$axios({
                     method: 'GET',
-                    url: 'http://localhost:8081/' + pathName + "\\" + e.target.innerText,
+                    url: 'http://localhost:4000/fileupload/' + pathName + "\\" + e.target.innerText,
                     responseType: 'blob'
                 }).then(response => {
                     let blob = new Blob([response.data], {type: response.data.type});
                     let url = window.URL.createObjectURL(blob);
-                    const link = document.createElement('a') ;// 创建a标签
+                    const link = document.createElement('a');// 创建a标签
                     link.href = url;
                     link.download = e.target.innerText;// 重命名文件
                     link.click();
-                    URL.revokeObjectURL(url) ;// 释放内存
+                    URL.revokeObjectURL(url);// 释放内存
                 }).catch(err => {
                     Message.error({
                         content: ' <Alert type="error" show-icon>' +
@@ -152,8 +152,19 @@
                 })
             }, backClick() {
                 //去掉末尾的分隔符"\"
-                this.path = this.path.substring(0, this.path.length - 1);
-                this.path = this.path.substring(0, this.path.lastIndexOf("\\"));
+                let pathName = this.path.substring(0, this.path.lastIndexOf("\\"));
+                if (pathName == '') {
+                    Message.error({
+                        content: ' <Alert type="error" show-icon>' +
+                            '已经到达根目录' +
+                            '    </Alert>',
+                        duration: 3,
+                        closable: true,
+                        top: 500,
+                    });
+                } else {
+                    this.path = pathName;
+                }
                 this.searchClick();
             }, uploadSuccess(response, file, fileList) {
                 Message.success({
@@ -181,8 +192,8 @@
             }, addFold() {
                 this.$axios({
                     method: 'GET',
-                    url: 'http://localhost:8081/file/mkdir',
-                    params:{path:pathName+"\\"+this.newFoldName},
+                    url: 'http://localhost:4000/fileupload/file/mkdir',
+                    params: {path: pathName + "\\" + this.newFoldName},
                 }).then(response => {
                     Message.success({
                         content: ' <Alert type="success" show-icon>' +
