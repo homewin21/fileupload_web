@@ -45,7 +45,7 @@
           </FormItem>
           <FormItem prop="telephone">
             <Input type="text" v-model="registerVO.telephone" size="large" placeholder="telephone"
-                   style="width: 300px;margin-left: 75px;">
+                   style="width: 300px;margin-left: 75px;" maxlength="11">
               <Icon type="md-phone-portrait" size="25" slot="prepend"></Icon>
             </Input>
           </FormItem>
@@ -55,9 +55,12 @@
               <Icon type="md-text" size="25" slot="prepend"></Icon>
               <Button slot="append" v-text="valBtn" @click="sendValCode"></Button>
             </Input>
+            <div v-show="valFlag&&!registerDis" class="ivu-form-item-error-tip">验证码不正确</div>
           </FormItem>
           <FormItem>
-            <Button type="primary" @click="registerSubmit('registerVO')" style="margin-left: 200px">Register</Button>
+            <Button type="primary" @click="registerSubmit('registerVO')" style="margin-left: 200px" ref="registerBtn"
+                    :disabled="registerDis">Register
+            </Button>
           </FormItem>
         </Form>
 
@@ -97,25 +100,15 @@
                         {
                             type: 'string',
                             min: 11,
-                            message: 'The password length cannot be less than 11 bits',
+                            message: 'The telephone length cannot be less than 11 bits',
                             trigger: 'blur'
                         }
                     ],
-                    valCode: [{required: true, message: '请填写验证码', trigger: 'blur'},
-                        {
-                            type: 'string',
-                            max: 6,
-                            message: '请输入正确的验证码',
-                            trigger: 'blur'
-                        }, {
-                            type: 'string',
-
-                        }
-                    ]
                 },
-                //根据是否已经发送验证码判断是否开放
-                valFlag: true,
-                valBtn: '获取验证码'
+                //根据是否已经发送验证码判断是否开放注册按钮
+                registerDis: true,
+                valBtn: '获取验证码',
+                valFlag: false
             }
         },
         methods: {
@@ -157,6 +150,23 @@
                             if (resp.data.responseData) {
                                 this.$Message.success("当前手机号已注册，请直接登录");
                             } else {
+                                //判断已经发送了验证码，开放注册按钮
+                                this.registerDis = false;
+                                let info = {
+                                    sid: "3150e6387503799fe24cf78a7aa3ae66",
+                                    token: "b48242a359b5279c47ec7335d4b77bbc",
+                                    appid: "ae5351f175d4459ebce6cf97bc4ce9fa",
+                                    templateid: "445930",
+                                    param: "123456,60",
+                                    mobile: "18559179737",
+                                    uid: "2d92c6132139467b989d087c84a365d8"
+                                };
+                                this.$axios.post('/api', info).then(resp => {
+                                    console.log(resp)
+                                }).catch(error => {
+                                    this.$Message.error("短信发送出问题了快去检查一下")
+                                    console.log(error)
+                                })
                                 let nums = 3;
                                 let clock;
                                 //将按钮置为不可点击

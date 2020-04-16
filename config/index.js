@@ -10,7 +10,17 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+      '/api': { //替换代理地址名称
+        target: 'https://open.ucpaas.com/ol/sms/sendsms', //代理地址
+        changeOrigin: true, //可否跨域
+        pathRewrite: {
+          '^/api': '' //重写接口，去掉/api
+        }
+      },
+      cssSourceMap: false
+    }
+    ,
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
@@ -20,7 +30,7 @@ module.exports = {
     notifyOnErrors: true,
     poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-
 
-    
+
     /**
      * Source Maps
      */
