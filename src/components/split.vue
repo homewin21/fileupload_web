@@ -45,7 +45,7 @@
         <Upload
           multiple
           type="drag"
-          action="http://localhost:4000/fileupload/file/uploadFile"
+          action="http://localhost:4000/file-service/file/uploadFile"
           :on-success="uploadSuccess"
           :on-error="uploadError"
           :data=dataObject
@@ -85,13 +85,37 @@
             searchClick() {
                 this.dataObject.path = pathName = this.path;
                 this.$axios
-                    .get("http://localhost:4000/fileupload/file/getPath", {
+                    .get("http://localhost:4000/file-service/file/getPath", {
                         params: {path: pathName}
                     })
                     .then(resp => {
-                        pathName = this.path;
-                        this.foldList = resp.data.foldList;
-                        this.fileList = resp.data.fileList;
+                        console.log(resp)
+                        if (resp.data.status === '200') {
+                            pathName = this.path;
+                            this.foldList = resp.data.responseData.foldList;
+                            this.fileList = resp.data.responseData.fileList;
+                        } else if (resp.data.status === '500') {
+                            if (resp.data.message === 'fuse') {
+                                Message.error({
+                                    content: ' <Alert type="error" show-icon>' +
+                                        '服务已熔断' +
+                                        '    </Alert>',
+                                    duration: 3,
+                                    closable: true,
+                                    top: 500,
+                                });
+                            } else {
+                                Message.error({
+                                    content: ' <Alert type="error" show-icon>' +
+                                        '服务出错' +
+                                        '    </Alert>',
+                                    duration: 3,
+                                    closable: true,
+                                    top: 500,
+                                });
+                            }
+                        }
+
                     })
                     .catch(err => {
                         Message.error({
@@ -106,14 +130,14 @@
                     });
             }, foldClick(e) {
                 this.$axios
-                    .get("http://localhost:4000/fileupload/file/getPath", {
+                    .get("http://localhost:4000/file-service/file/getPath", {
                         params: {path: pathName + "\\" + e.target.innerText}
                     })
                     .then(resp => {
                         pathName = pathName + "\\" + e.target.innerText;
                         this.dataObject.path = this.path = pathName + "\\";
-                        this.foldList = resp.data.foldList;
-                        this.fileList = resp.data.fileList;
+                        this.foldList = resp.data.responseData.foldList;
+                        this.fileList = resp.data.responseData.fileList;
                     })
                     .catch(err => {
                         Message.error({
@@ -129,7 +153,7 @@
             }, fileClick(e) {
                 this.$axios({
                     method: 'GET',
-                    url: 'http://localhost:4000/fileupload/' + pathName + "\\" + e.target.innerText,
+                    url: 'http://localhost:4000/file-service/' + pathName + "\\" + e.target.innerText,
                     responseType: 'blob'
                 }).then(response => {
                     let blob = new Blob([response.data], {type: response.data.type});
@@ -192,7 +216,7 @@
             }, addFold() {
                 this.$axios({
                     method: 'GET',
-                    url: 'http://localhost:4000/fileupload/file/mkdir',
+                    url: 'http://localhost:4000/file-service/file/mkdir',
                     params: {path: pathName + "\\" + this.newFoldName},
                 }).then(response => {
                     Message.success({
