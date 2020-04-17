@@ -16,6 +16,7 @@
     "video.js": "^7.6.6",
     "view-design": "^4.0.0",
     "vue": "^2.5.2",
+    "vue-cookies": "^1.7.0",
     "vue-router": "^3.0.1"
   },
   "devDependencies": {

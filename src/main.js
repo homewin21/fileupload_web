@@ -8,11 +8,12 @@ import Video from 'video.js'
 import 'video.js/dist/video-js.css'
 import 'view-design/dist/styles/iview.css';
 import ViewUI from 'view-design';
+import VueCookies from 'vue-cookies';
 
+Vue.use(VueCookies);
 Vue.use(ViewUI);
 Vue.prototype.$video = Video
 Vue.prototype.$axios = axios;
-
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

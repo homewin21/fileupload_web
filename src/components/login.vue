@@ -53,9 +53,9 @@
             <Input type="text" v-model="registerVO.valCode" size="large" placeholder="valcode"
                    style="width: 300px;margin-left: 75px" maxlength="6">
               <Icon type="md-text" size="25" slot="prepend"></Icon>
-              <Button slot="append" v-text="valBtn" @click="sendValCode"></Button>
+              <Button slot="append" v-text="valBtn" @click="sendValCode" ref="valBtn"></Button>
             </Input>
-            <div v-show="valFlag&&!registerDis" class="ivu-form-item-error-tip">验证码不正确</div>
+            <div v-show="!registerDis" class="ivu-form-item-error-tip">验证码不正确</div>
           </FormItem>
           <FormItem>
             <Button type="primary" @click="registerSubmit('registerVO')" style="margin-left: 200px" ref="registerBtn"
@@ -108,7 +108,8 @@
                 //根据是否已经发送验证码判断是否开放注册按钮
                 registerDis: true,
                 valBtn: '获取验证码',
-                valFlag: false
+                //验证码倒计时
+                valTime: 20
             }
         },
         methods: {
@@ -138,7 +139,8 @@
                     }
                 })
             },
-            sendValCode(e){
+            sendValCode(e) {
+
                 //校验输入的手机号是否合规
                 this.$refs['registerVO'].validateField('telephone', teleError => {
                     if (teleError) {
@@ -152,48 +154,91 @@
                             } else {
                                 //判断已经发送了验证码，开放注册按钮
                                 this.registerDis = false;
-                                let info = {
-                                    sid: "3150e6387503799fe24cf78a7aa3ae66",
-                                    token: "b48242a359b5279c47ec7335d4b77bbc",
-                                    appid: "ae5351f175d4459ebce6cf97bc4ce9fa",
-                                    templateid: "445930",
-                                    param: "123456,60",
-                                    mobile: "18559179737",
-                                    uid: "2d92c6132139467b989d087c84a365d8"
-                                };
-                                this.$axios.post('/api', info).then(resp => {
-                                    console.log(resp)
-                                }).catch(error => {
-                                    this.$Message.error("短信发送出问题了快去检查一下")
-                                    console.log(error)
-                                })
-                                let nums = 3;
+                                // console.log(this.getValCode());
+                                //云之迅平台一条短信耗费0.055元巨资，请谨慎使用该功能
+                                // let info = {
+                                //     sid: "3150e6387503799fe24cf78a7aa3ae66",
+                                //     token: "b48242a359b5279c47ec7335d4b77bbc",
+                                //     appid: "ae5351f175d4459ebce6cf97bc4ce9fa",
+                                //     templateid: "445930",
+                                //     param: "123456,60",
+                                //     mobile: "18559179737",
+                                //     uid: "2d92c6132139467b989d087c84a365d8"
+                                // };
+                                // this.$axios.post('/api', info).then(resp => {
+                                //     console.log(resp)
+                                // }).catch(error => {
+                                //     this.$Message.error("短信发送出问题了快去检查一下")
+                                //     console.log(error)
+                                // })
                                 let clock;
-                                //将按钮置为不可点击
-                                e.target.disabled = true;
-                                e.target.innerText = nums + '秒后重发';
+                                let valBtn = this.$refs['valBtn'];
+                                this.data().valTime = this.$cookies.get("valTime");
+                                valBtn.disabled = true;
+                                valBtn.innerText = this.data().valTime + '秒后重发';
                                 clock = setInterval(function () {
-                                    nums--;
-                                    if (nums > 0) {
-                                        e.target.innerText = nums + '秒后重发';
+                                    this.data().valTime--;
+                                    if (this.data().valTime > 0) {
+                                        valBtn.innerText = this.data().valTime + '秒后重发';
+                                        this.$cookies.set("valTime", this.data().valTime);
                                     } else {
+                                        this.$cookies.remove("valTime");
                                         //清除js定时器
                                         clearInterval(clock);
-                                        e.target.disabled = false;
-                                        e.target.innerText = '重新发送';
+                                        valBtn.disabled = false;
+                                        valBtn.innerText = '重新发送';
                                         //重置时间
-                                        nums = 3;
+                                        this.data().valTime = 20;
                                     }
                                 }, 1000);
                             }
-
                         }).catch(err => {
                             console.log(err);
                             this.$Message.error("服务出问题了还不快去修!");
                         });
                     }
                 });
+            },
+            //获取6位数随机验证码，并保存在后台redis中
+            getValCode() {
+                this.$axios.get("http://localhost:4000/user-service/user/getValCode", {
+                    params: {
+                        telephone: this.telephone
+                    }
+                }).then(resp => {
+                    return resp.data.responseData;
+                }).catch(error => {
+                    console.log(error)
+                })
             }
+        },
+        mounted() {
+            let clock;
+            let valBtn = this.$refs['valBtn'];
+            if (this.$cookies.isKey("valTime")) {
+                this.data().valTime = this.$cookies.get("valTime");
+                valBtn.disabled = true;
+                valBtn.innerText = this.data().valTime + '秒后重发';
+                clock = setInterval(function () {
+                    this.data().valTime--;
+                    if (this.data().valTime > 0) {
+                        valBtn.innerText = this.data().valTime + '秒后重发';
+                        this.$cookies.set("valTime", this.data().valTime);
+                    } else {
+                        this.$cookies.remove("valTime");
+                        //清除js定时器
+                        clearInterval(clock);
+                        valBtn.disabled = false;
+                        valBtn.innerText = '重新发送';
+                        //重置时间
+                        this.data().valTime = 20;
+                    }
+                }, 1000);
+            }
+            //将按钮置为不可点击
+
+
+            console.log(1)
         }
     }
 </script>
